@@ -1,0 +1,17 @@
+{
+  "name": "jitsi-jwt-server",
+  "version": "1.0.0",
+  "description": "JWT token generator for Jitsi meetings",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": "18.x"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "cors": "^2.8.5"
+  }
+}
