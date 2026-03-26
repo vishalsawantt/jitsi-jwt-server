@@ -8,7 +8,7 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// YOUR NEW PRIVATE KEY (from the downloaded file)
+// ✅ FIXED: Private key must have proper PEM headers and line breaks
 const PRIVATE_KEY = `-----BEGIN PRIVATE KEY-----
 MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDyAFhzn4vqmF4y
 RHO2qH2wt/abreA5LWmsOc9SkTZPhmDQQYOt93qYbbmLlQ4XFapM4X4kua/cFCAJ
@@ -38,14 +38,13 @@ oUYJ3GmH+Bgy9Ox4MCF2lE/Xrot8gt+cR2TMvGDZdViMB1R6iyPcQRV2OVicYmdo
 C6m3xkHA7MjLG36UXMOS2hdJ
 -----END PRIVATE KEY-----`;
 
-// YOUR NEW KEY ID (from the dashboard - note the change!)
 const APP_ID = "vpaas-magic-cookie-2fb727eb90064a9dab8d69dbae94d39c";
-const KEY_ID = "vpaas-magic-cookie-2fb727eb90064a9dab8d69dbae94d39c/a2cb83";  // UPDATED!
-const SERVER_URL = "https://meet.jit.si";
+const KEY_ID = "vpaas-magic-cookie-2fb727eb90064a9dab8d69dbae94d39c/a2cb83";
+const SERVER_URL = "https://8x8.vc"; // ✅ FIXED: Use 8x8.vc not meet.jit.si for jaas
 
 // Health check endpoint
 app.get('/', (req, res) => {
-  res.json({ 
+  res.json({
     status: 'JWT Server is running!',
     timestamp: new Date().toISOString(),
     service: 'Jitsi JWT Generator'
@@ -56,23 +55,25 @@ app.get('/', (req, res) => {
 app.post('/generate-token', (req, res) => {
   try {
     const { roomName, userId, userName, userEmail, isModerator } = req.body;
-    
+
     if (!roomName || !userId || !userName) {
-      return res.status(400).json({ 
-        error: 'Missing required parameters: roomName, userId, userName are required' 
+      return res.status(400).json({
+        error: 'Missing required parameters: roomName, userId, userName are required'
       });
     }
-    
+
     const now = Math.floor(Date.now() / 1000);
     const exp = now + (24 * 60 * 60); // 24 hours
-    
-    const sanitizedRoom = `cosmino-${roomName.toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
-    
+
+    // ✅ FIXED: For JaaS (8x8.vc), room format must be: APP_ID/roomName
+    const sanitizedRoom = roomName.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+    const fullRoom = `${APP_ID}/${sanitizedRoom}`;
+
     const payload = {
-      aud: 'jitsi',
-      iss: APP_ID,
-      sub: SERVER_URL,
-      room: sanitizedRoom,
+      aud: 'jitsi',                   // ✅ Must be 'jitsi'
+      iss: 'chat',                    // ✅ FIXED: Must be 'chat' for JaaS, not APP_ID
+      sub: APP_ID,                    // ✅ FIXED: sub must be APP_ID for JaaS
+      room: '*',                      // ✅ FIXED: Use '*' to allow any room, or sanitizedRoom
       exp: exp,
       nbf: now,
       context: {
@@ -80,33 +81,42 @@ app.post('/generate-token', (req, res) => {
           id: userId,
           name: userName,
           email: userEmail || `${userName.toLowerCase().replace(/ /g, '.')}@cosmino.com`,
-          moderator: isModerator || false,
+          moderator: isModerator === true,
+          'hidden-from-recorder': false,
         },
         features: {
           recording: false,
           livestreaming: false,
           'outbound-call': false,
+          transcription: false,
         }
       }
     };
-    
-    // Sign with RS256 using your new private key
+
+    // Sign with RS256
     const token = jwt.sign(payload, PRIVATE_KEY, {
       algorithm: 'RS256',
       keyid: KEY_ID,
+      header: {
+        alg: 'RS256',
+        kid: KEY_ID,
+        typ: 'JWT',
+      }
     });
-    
-    console.log(`✅ Token generated for room: ${roomName}`);
+
+    console.log(`✅ Token generated for room: ${sanitizedRoom}`);
+    console.log(`   Full room path: ${fullRoom}`);
     console.log(`   Key ID: ${KEY_ID}`);
     console.log(`   User: ${userName}, Moderator: ${isModerator}`);
-    
-    res.json({ 
-      success: true, 
+
+    res.json({
+      success: true,
       token: token,
-      room: sanitizedRoom,
+      room: fullRoom,          // Return the full room path for Flutter to use
+      sanitizedRoom: sanitizedRoom,
       expiresAt: new Date(exp * 1000).toISOString()
     });
-    
+
   } catch (error) {
     console.error('❌ Error generating token:', error);
     res.status(500).json({ error: error.message });
@@ -114,17 +124,9 @@ app.post('/generate-token', (req, res) => {
 });
 
 // Start server
-const server = app.listen(port, () => {
-  const actualPort = server.address().port;
-  console.log(`🚀 JWT Server running on port ${actualPort}`);
-  console.log(`📡 Health check: http://localhost:${actualPort}`);
-  console.log(`🔑 Token endpoint: POST http://localhost:${actualPort}/generate-token`);
+app.listen(port, () => {
+  console.log(`🚀 JWT Server running on port ${port}`);
+  console.log(`📡 Health check: http://localhost:${port}`);
+  console.log(`🔑 Token endpoint: POST http://localhost:${port}/generate-token`);
   console.log(`🔐 Key ID: ${KEY_ID}`);
-}).on('error', (err) => {
-  if (err.code === 'EADDRINUSE') {
-    console.log(`Port ${port} is busy, trying port ${port + 1}...`);
-    server.listen(port + 1);
-  } else {
-    console.error(err);
-  }
 });
