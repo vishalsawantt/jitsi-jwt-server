@@ -8,38 +8,39 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// Your Jitsi private key
+// YOUR NEW PRIVATE KEY (from the downloaded file)
 const PRIVATE_KEY = `-----BEGIN PRIVATE KEY-----
-MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCta+4o8U1ebv6G
-1oawqQFTDMgTPrQn/64wBsJQM+fIw0QveuMeamb+mot+ZOInlrueaoqPsjfe3KDz
-3xGFTSFlkTYu+oejkEma1iRvs2s7l6TAHT7cFW0Ua1bRc5xVZhGWdEQZr5ijQ1J/
-uHZRka2uZ5ikytcRcWFdnhWoSCbUY65p6f8qthN0IMbtDI/XGtobqnNp6waeKQBS
-2njqqXJG01T1RewkwslCyGA9EdrNtgP4onoWs1VZtbZnEvm1NBO1I3BT5YsqhHkE
-YhM8dwIcJhkjo4u1ub7cL/bh2lSHnk5XqZ5RqTQ54FkQ1b1nI8j1b51f6xpKI2F9
-ar/r1G6RAgMBAAECggEAdYV6s4wynhghrEacqAMfvqQewcvwUlrWM/2gmLFUFZ0e
-C/7/ApGgklEwzsqW57UiF8yjcZWYfxKMkDdOrEMEqsupKFTmrlUNTDxqHLg9pviw
-0PAAtSxf60KCZxYtj0HIEWlg7PcuPRVWRu8+XzCVvma97o73B/8JuGN00cFzbuGv
-Vr1YWE9DSzH3dKywjS2+FBmM8bwisruTSYdUIYw7WAxjQvuqXqxE136ATNxgZu7D
-gzEKJ2mG0cqOA8agmtyGoIUkUFNR0uCEKEyGTC5WpzOCOhUy3iD83Y7Xex8PDr5D
-QEF1sp3HEBLXQEBO3cuo+vKA81K7Kb5wRmaV4ephcQKBgQDoOoe7W4Gd2+Q6KzMl
-i+i2trLuU+TxHMfVndVwXHp31NKtKKd4iwpV9nfnL02ADGdpE5x0AEb7yNIEhVfA
-PYbz8GWNaWoH5b8OuqS39/AvoXsRjtyZGrfqeb34kJSOc3022qu376iL9A6C5XMi
-nOjALEmqq8MfcOeBpnHDcmn8LwKBgQC/LGHsnznVeU9fOlIEt7YM+PiHQerxkPnW
-Z6wGRImzqMOa3jet8Z75sp8NPmPU0muG/D0TY4bx0G0XdOwmHT2opqF/pdgqcOlX
-4k2EEv81aDuz98lXEWehny29PWIHY2QbQUsm8QbxMNmcUzrcGQwe579kUTic0fBO
-NTxJmLPRPwKBgFPkSQJC5UkclY756iknKLNQvsTf47XCeuJNeTx0+/zsEgthw1YF
-jH9PYTNP4ERgtr67yeoR65Krkkr1zKRy1Zyr/FOggCBIO8PbYwPeepMKV8YZANIC
-V+xJfHod6LypNdOqHRx+ZDniuZdJwlT/sAk0NoyELiHejJNGiJRdcbIbAoGBALtX
-I/M8qfEvev+n6D4lRar6xJnPmAv39U0NtT9DJOpBZMY8I7Y6xH6Pc1wIGs6xEZxr
-TPLWIqSPiohlFRHYr9a4zCSKAga9NX3hD/NwplXQ+kjHdq/zJ2nz0l/TamAxHyWy
-W5IiupnbNDUEPvb3OLCEjEMjcOYEuYf6lUTN9tEDAoGBAJ1Od1x6QvzeeRZq9aG0
-DevuziwFFZVEa9PHLaBPI0ZkkLKZaJ4M8wTBhbpBk7Z7qTw5qbiToFK0nLcSs9WH
-DxEC5kRjpeLNjZuRtI/jlAD3hd8ikSugJOJNTlx+0Lmqavd9QBuxm8L4DpXB5ZTo
-gN+demRxOnH6LS98mKa0tDu1
+MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDyAFhzn4vqmF4y
+RHO2qH2wt/abreA5LWmsOc9SkTZPhmDQQYOt93qYbbmLlQ4XFapM4X4kua/cFCAJ
+QA9YrzJeodLgioelM1SiNHCdtZspLm8MDUiSweUFIQ1NmrRomaZieOaVJOeHFtwo
+Ch3DNPpw2nVZxaGE9idZs1QpRqHhq3sdAASXpW61x8Q2RXDno7QgcRLuA35x+cQp
+xRZZfaKoqvQio2Dlf33ZC3ywMYD7nqWHw9DTQ7hP3IgK3Dn0ErRbUKx3hl+jUPTL
+LhYVO6oqqImDcADQxEZlM5AC1+uBxARteMmta1prDnKH+gXr+pAiOBzlse7NqT9t
+OhLj2q8bAgMBAAECggEAcKhChQj4DK0D5OjC6XyEjrkFP7HxGQ0QDZIX9rsNCnZn
+KWvmTh1QYBdschNgrNR0JDgxDg23VX+07jl5K3LbwvwYfFlhDkHYG27IIlMBuWkZ
+XwXsDA3hfMLHO6JSbANjVqIrzbCRa+zzblxPQKmwEMtSKAl9yLUC2ppGCrUL9U6E
+Q39QF7W+hXxuCq/Aa8JgT56sfFnFcfrcXpUGWPFJbiLzsAhUZ3HKD0kd2kKIayuL
+I2Yu6sWDSVtfvl35L+FlYLs4H3yzTO449ehlWnQYiGHZLzAY2XM62LhoAcaP/0Ns
+ydHkTVcgwkx2JrldyJCtIm92UFUNL7lzXPlvWcq2EQKBgQD+iTISWvopXk1R6Yv5
+vgp5qf4bWAKUDizyp6rVWxcONhu7KDzw2ae2N733qGG/HxUHUlgs35jTbA5pBAnR
+NViANMXiE4jxhh1orABUepEuRxULTxEdaqn7C9RvEhMxzyW7w+J8Vn6ObMFqTqr/
+Z2pk5kVw+AQKHfp0VtlNbnq5IwKBgQDzZLFYSajcV/cj5L7PQ2tURfl/pTBm2upp
+D+gVuu6YJPTjlVj7uWRB071LaBYVrEXmewVVylR96JuOb4kAFfJSASntLpdhh9zp
+WkxqJ589ezkPDJQNmc6jjix/93fS9uI3d6FGxp82kD4+U8chJr1qXer+95gl4KfP
+sMPdrESdqQKBgQCtPTl8LrmHAG0FrDwd3Y+JoP6XI76VgFRtT1rBXf8CKCeVqVxY
+3Pr91VCRR+RHTWNlmVD0Mbb1Zt0j8qCv6Gv0znZEWeFh6VMI09Bhrw4y/iQ/jy/p
+4pgQisuqURYJV6Cp/DehQsleLH0z2pkdvgg25lcq/VLag+7b0eSSg/g5GwKBgQDi
+IaZnaaBaf9vc3FSvSms4k/63qmkq1q+9RwsQzWmJr6RaodJXpapRQoF3ws/p+PHE
+rn2JdH9Fr8x+7H9ztfA6YlxqwcPh2JHVuJCQfBmFzKt5oO0ZKdKDwL71cZ1BQyFv
++VS85iLcVe2OiNXUpiKL5ZBErRMN9gjTfN6tYLUraQKBgHCRn9D5SPMXbmtX9Ml8
+3E/1Gen1jjNS8MtIo8DAstjp1lE1xksCjTvOv7Nr5xZyP/Qgsui4Bs15Sr/nF/P3
+oUYJ3GmH+Bgy9Ox4MCF2lE/Xrot8gt+cR2TMvGDZdViMB1R6iyPcQRV2OVicYmdo
+C6m3xkHA7MjLG36UXMOS2hdJ
 -----END PRIVATE KEY-----`;
 
+// YOUR NEW KEY ID (from the dashboard - note the change!)
 const APP_ID = "vpaas-magic-cookie-2fb727eb90064a9dab8d69dbae94d39c";
-const KEY_ID = "vpaas-magic-cookie-2fb727eb90064a9dab8d69dbae94d39c/8ca958";
+const KEY_ID = "vpaas-magic-cookie-2fb727eb90064a9dab8d69dbae94d39c/a2cb83";  // UPDATED!
 const SERVER_URL = "https://meet.jit.si";
 
 // Health check endpoint
@@ -56,7 +57,6 @@ app.post('/generate-token', (req, res) => {
   try {
     const { roomName, userId, userName, userEmail, isModerator } = req.body;
     
-    // Validate required parameters
     if (!roomName || !userId || !userName) {
       return res.status(400).json({ 
         error: 'Missing required parameters: roomName, userId, userName are required' 
@@ -66,10 +66,8 @@ app.post('/generate-token', (req, res) => {
     const now = Math.floor(Date.now() / 1000);
     const exp = now + (24 * 60 * 60); // 24 hours
     
-    // Sanitize room name
     const sanitizedRoom = `cosmino-${roomName.toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
     
-    // JWT Payload
     const payload = {
       aud: 'jitsi',
       iss: APP_ID,
@@ -92,13 +90,14 @@ app.post('/generate-token', (req, res) => {
       }
     };
     
-    // Generate JWT with RS256
+    // Sign with RS256 using your new private key
     const token = jwt.sign(payload, PRIVATE_KEY, {
       algorithm: 'RS256',
       keyid: KEY_ID,
     });
     
-    console.log(`✅ Token generated for room: ${roomName} at ${new Date().toISOString()}`);
+    console.log(`✅ Token generated for room: ${roomName}`);
+    console.log(`   Key ID: ${KEY_ID}`);
     console.log(`   User: ${userName}, Moderator: ${isModerator}`);
     
     res.json({ 
@@ -115,8 +114,17 @@ app.post('/generate-token', (req, res) => {
 });
 
 // Start server
-app.listen(port, () => {
-  console.log(`🚀 JWT Server running on port ${port}`);
-  console.log(`📡 Health check: http://localhost:${port}`);
-  console.log(`🔑 Token endpoint: POST http://localhost:${port}/generate-token`);
+const server = app.listen(port, () => {
+  const actualPort = server.address().port;
+  console.log(`🚀 JWT Server running on port ${actualPort}`);
+  console.log(`📡 Health check: http://localhost:${actualPort}`);
+  console.log(`🔑 Token endpoint: POST http://localhost:${actualPort}/generate-token`);
+  console.log(`🔐 Key ID: ${KEY_ID}`);
+}).on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.log(`Port ${port} is busy, trying port ${port + 1}...`);
+    server.listen(port + 1);
+  } else {
+    console.error(err);
+  }
 });
